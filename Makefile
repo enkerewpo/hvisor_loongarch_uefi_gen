@@ -27,7 +27,7 @@ WORKDIR         = $(shell pwd)/./
 GNU_EFI         = $(WORKDIR)/gnu-efi-dev-la64
 EFIINC          = $(GNU_EFI)/inc
 EFIINCS         = -I$(EFIINC) -I$(EFIINC)/$(ARCH) -I$(EFIINC)/protocol
-hvisor_C_INC= ./include
+hvisor_C_INC	= $(WORKDIR)/include
 LIB             = $(GNU_EFI)/$(ARCH)/gnuefi
 LIB_2           = $(GNU_EFI)/$(ARCH)/lib
 RUST_INC        = $(WORKDIR)/../rust_src
@@ -85,4 +85,4 @@ clean:
 	$(foreach dir,$(GUEST_OS_DIRS),$(MAKE) -C $(GUEST_OS_DIRS_PREFIX)$(dir) clean;)
 
 run: $(TARGET)
-	$(QEMU) -bios edk2-loongarch64-code.fd -kernel $(TARGET) -m 1G -smp 1 -nographic -serial mon:stdio
+	$(QEMU) -bios QEMU_EFI.fd -kernel $(TARGET) -m 4G -smp 1 -nographic -serial mon:stdio
