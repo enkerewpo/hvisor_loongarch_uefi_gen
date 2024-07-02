@@ -53,3 +53,5 @@ dkms.conf
 *.efi
 hvisor.asm
 hvisor.txt
+
+.vscode-ctags

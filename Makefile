@@ -24,6 +24,7 @@ OBJS = $(patsubst src/%.c,$(BUILD_DIR)/%.o,$(wildcard src/*.c)) \
 
 TARGET          = hvisor.efi
 WORKDIR         = $(shell pwd)/./
+ELF_TARGET      = $(WORKDIR)/../hvisor/target/loongarch64-unknown-none/debug/hvisor
 GNU_EFI         = $(WORKDIR)/gnu-efi-dev-la64
 EFIINC          = $(GNU_EFI)/inc
 EFIINCS         = -I$(EFIINC) -I$(EFIINC)/$(ARCH) -I$(EFIINC)/protocol
@@ -57,7 +58,7 @@ ifeq ($(F_QEMU), 1)
 	CFLAGS += -DQEMU
 endif
 
-all: $(TARGET)
+all: clean $(TARGET)
 
 hvisor.so: $(OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@ -lefi -lgnuefi
@@ -84,8 +85,13 @@ clean:
 	@rm -rf $(BUILD_DIR) $(DEBUG_DIR) *.efi *.so *.txt *.asm
 	$(foreach dir,$(GUEST_OS_DIRS),$(MAKE) -C $(GUEST_OS_DIRS_PREFIX)$(dir) clean;)
 
-run: $(TARGET)
-	$(QEMU) -bios QEMU_EFI.fd -kernel $(TARGET) -m 4G -smp 1 -nographic -serial mon:stdio -s -S
+QEMU_CMD = $(QEMU) -bios QEMU_EFI.fd -kernel $(TARGET) -m 4G -smp 1 -nographic -serial mon:stdio
 
-debug: $(TARGET)
-	$(CROSS_GDB) -ex "target remote localhost:1234" -ex "layout asm"
+run: clean $(TARGET)
+	$(QEMU_CMD)
+
+run-debug: clean $(TARGET)
+	$(QEMU_CMD) -s -S
+
+debug:
+	$(CROSS_GDB) -ex "file $(ELF_TARGET)" -ex "target remote localhost:1234" -ex "layout asm"
