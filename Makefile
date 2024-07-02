@@ -85,4 +85,7 @@ clean:
 	$(foreach dir,$(GUEST_OS_DIRS),$(MAKE) -C $(GUEST_OS_DIRS_PREFIX)$(dir) clean;)
 
 run: $(TARGET)
-	$(QEMU) -bios QEMU_EFI.fd -kernel $(TARGET) -m 4G -smp 1 -nographic -serial mon:stdio
+	$(QEMU) -bios QEMU_EFI.fd -kernel $(TARGET) -m 4G -smp 1 -nographic -serial mon:stdio -s -S
+
+debug: $(TARGET)
+	$(CROSS_GDB) -ex "target remote localhost:1234" -ex "layout asm"

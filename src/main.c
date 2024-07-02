@@ -37,9 +37,23 @@ efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 
   CopyMem((void *)hvisor_bin_addr, (void *)hvisor_bin_start, hvisor_bin_size);
 
+  // dump 20 instructions from hvisor_bin_addr, 4 instructions per line
+  Print(L"Dumping instructions from 0x%lx\n", hvisor_bin_addr);
+  for (int i = 0; i < 20; i++) {
+    UINT32 *inst = (UINT32 *)(hvisor_bin_addr + i * 4);
+    // 4 instructions per line
+    if (i % 4 == 0 && i != 0) {
+      Print(L"\n");
+    }
+    Print(L"0x%08x ", *inst);
+  }
+  Print(L"\n");
+
   Print(L"==============================================\n");
   Print(L"Done! now jump to hvisor entry...\n");
   Print(L"==============================================\n");
+
+  init_serial();
 
   void *hvisor_entry = (void *)hvisor_bin_addr;
   ((void (*)(void))hvisor_entry)();

@@ -10,5 +10,8 @@
         "efi.h": "c",
         "regdef.h": "c",
         "efilib.h": "c"
-    }
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false
 }
